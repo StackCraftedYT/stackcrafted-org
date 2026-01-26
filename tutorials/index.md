@@ -8,6 +8,7 @@ Step-by-step self-hosting guides with Docker.
 
 ## Available Tutorials
 
-[Vaultwarden (Password Manager)](vaultwarden/)
+[Vaultwarden (Password Manager)](https://stackcraftedyt.github.io/stackcrafted-org/tutorials/vaultwarden/)
+
 
 
