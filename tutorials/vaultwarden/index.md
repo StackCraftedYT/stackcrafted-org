@@ -14,20 +14,20 @@ This page is the written companion to the StackCrafted YouTube video.
 
 ## What You Will Deploy
 
-- Vaultwarden in Docker
-- Docker Compose deployment
-- HTTPS with free SSL
-- Custom domain/subdomain
-- Persistent storage
+- Vaultwarden in Docker  
+- Docker Compose deployment  
+- HTTPS with free SSL  
+- Custom domain/subdomain  
+- Persistent storage  
 
 ---
 
 ## Prerequisites
 
-- Linux server or VPS
-- Domain name with DNS access
-- Docker installed
-- Docker Compose installed
+- Linux server or VPS  
+- Domain name with DNS access  
+- Docker installed  
+- Docker Compose installed  
 
 ---
 
@@ -87,9 +87,15 @@ docker compose up -d
 
 ## Step 5 – Reverse Proxy + SSL
 
-Configure your reverse proxy to forward traffic to:
+Vaultwarden must be placed behind a reverse proxy.
 
-```text
+Detailed example (Nginx Proxy Manager):
+
+https://github.com/StackCraftedYT/vaultwarden-docker/blob/main/proxy-examples/nginx-proxy-manager.md
+
+Proxy target:
+
+```
 127.0.0.1:8080
 ```
 
@@ -97,7 +103,7 @@ Configure your reverse proxy to forward traffic to:
 
 ## Step 6 – Access Vault
 
-```text
+```
 https://vault.stackcrafted.org
 ```
 
@@ -105,7 +111,7 @@ https://vault.stackcrafted.org
 
 ## Step 7 – Admin Panel
 
-```text
+```
 https://vault.stackcrafted.org/admin
 ```
 
@@ -130,5 +136,5 @@ tar -czvf vaultwarden-backup.tar.gz /opt/vaultwarden/data
 
 ## Links
 
-- GitHub Repo: https://github.com/StackCraftedYT/vaultwarden-docker
-- YouTube Video: coming soon
+GitHub Repo: https://github.com/StackCraftedYT/vaultwarden-docker  
+YouTube Video: coming soon
