@@ -1,38 +1,20 @@
 ---
-title: Vaultwarden (Bitwarden Server) with Docker + SSL + Domain
+title: Vaultwarden Test
 ---
 
-# Vaultwarden (Bitwarden Server) with Docker + SSL + Domain
+# Test Page
 
-This guide shows how to deploy **Vaultwarden**, a lightweight Bitwarden-compatible password manager server, using Docker, secured with HTTPS, and accessible via:
-
-**vault.stackcrafted.org**
-
-This page is the written companion to the StackCrafted YouTube video.
-
----
-
-## What You Will Deploy
-
-- Vaultwarden in Docker  
-- Docker Compose deployment  
-- HTTPS with free SSL  
-- Custom domain/subdomain  
-- Persistent storage  
-
----
-
-## Prerequisites
-
-- Linux server or VPS  
-- Domain name with DNS access  
-- Docker installed  
-- Docker Compose installed  
-
----
-
-## Step 1 – Create Project Directory
+## Step 2 – Create Environment File
 
 ```bash
-mkdir -p /opt/vaultwarden
-cd /opt/vaultwarden
+nano .env
+ADMIN_TOKEN=generate_a_random_string_here
+
+Commit.
+
+Reply:
+
+**Committed test file**
+
+We verify formatting first.  
+Only after this works, we paste the full tutorial content.
