@@ -15,3 +15,4 @@ All tutorials are paired with YouTube videos and copy-paste configs.
 - YouTube: https://youtube.com/@StackCraftedHQ  
 - GitHub: https://github.com/StackCraftedYT  
 - Website: https://stackcrafted.org
+  
