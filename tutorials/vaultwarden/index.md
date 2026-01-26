@@ -1,20 +1,89 @@
 ---
-title: Vaultwarden Test
+title: Vaultwarden (Bitwarden Server) with Docker + SSL + Domain
 ---
 
-# Test Page
+# Vaultwarden (Bitwarden Server) with Docker + SSL + Domain
 
-## Step 2 – Create Environment File
+This guide shows how to deploy **Vaultwarden**, a lightweight Bitwarden-compatible password manager server, using Docker, secured with HTTPS, and accessible via:
+
+**vault.stackcrafted.org**
+
+This page is the written companion to the StackCrafted YouTube video.
+
+---
+
+## What You Will Deploy
+
+- Vaultwarden in Docker  
+- Docker Compose deployment  
+- HTTPS with free SSL  
+- Custom domain/subdomain  
+- Persistent storage  
+
+---
+
+## Prerequisites
+
+- Linux server or VPS  
+- Domain name with DNS access  
+- Docker installed  
+- Docker Compose installed  
+
+---
+
+## Step 1 – Create Project Directory
 
 ```bash
+mkdir -p /opt/vaultwarden
+cd /opt/vaultwarden
+
+Step 2 – Create Environment File
 nano .env
 ADMIN_TOKEN=generate_a_random_string_here
 
-Commit.
+Step 3 – Create Docker Compose File
+nano compose.yml
 
-Reply:
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=https://vault.stackcrafted.org
+      - TZ=Europe/London
+    volumes:
+      - ./data:/data
+    ports:
+      - "127.0.0.1:8080:80"
 
-**Committed test file**
+Step 4 – Start Vaultwarden
+docker compose up -d
 
-We verify formatting first.  
-Only after this works, we paste the full tutorial content.
+Step 5 – Reverse Proxy + SSL
+127.0.0.1:8080
+
+Step 6 – Access Vault (replace it with your own doamin)
+https://vault.stackcrafted.org
+
+Step 7 – Admin Panel
+https://vault.stackcrafted.org/admin
+
+Updates
+docker compose pull
+docker compose up -d
+
+Backup
+tar -czvf vaultwarden-backup.tar.gz /opt/vaultwarden/data
+
+Links
+
+GitHub Repo: https://github.com/StackCraftedYT/vaultwarden-docker
+
+YouTube Video: coming soon
+
+
+
+
