@@ -14,65 +14,54 @@ This page is the written companion to the StackCrafted YouTube video.
 
 ## What You Will Deploy
 
-- Vaultwarden in Docker
-- Docker Compose deployment
-- HTTPS with free SSL
-- Custom domain/subdomain
-- Persistent storage
+- Vaultwarden in Docker  
+- Docker Compose deployment  
+- HTTPS with free SSL  
+- Custom domain/subdomain  
+- Persistent storage  
 
 ---
 
 ## Prerequisites
 
-- Linux server or VPS
-- Domain name with DNS access
-- Docker installed
-- Docker Compose installed
+- Linux server or VPS  
+- Domain name with DNS access  
+- Docker installed  
+- Docker Compose installed  
 
 ---
 
 ## Step 1 – Create Project Directory
 
 ```bash
-mkdir -p /opt/vaultwarden
-cd /opt/vaultwarden
+sudo mkdir -p /opt/docker/vaultwarden
+sudo chown -R $USER:$USER /opt/docker
+cd /opt/docker/vaultwarden
 ```
 
 ---
 
-## Step 2 – Create Environment File
+## Step 2 – Get the Config Files (Clone Repo)
 
 ```bash
+cd /opt/docker
+git clone https://github.com/StackCraftedYT/vaultwarden-docker.git vaultwarden
+cd /opt/docker/vaultwarden
+```
+
+---
+
+## Step 3 – Create Environment File
+
+```bash
+cp .env.example .env
 nano .env
 ```
 
+Set a random admin token:
+
 ```env
 ADMIN_TOKEN=generate_a_random_string_here
-```
-
----
-
-## Step 3 – Create Docker Compose File
-
-```bash
-nano compose.yml
-```
-
-```yaml
-services:
-  vaultwarden:
-    image: vaultwarden/server:latest
-    container_name: vaultwarden
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      - DOMAIN=https://vault.stackcrafted.org
-      - TZ=Europe/London
-    volumes:
-      - ./data:/data
-    ports:
-      - "127.0.0.1:8080:80"
 ```
 
 ---
@@ -83,14 +72,22 @@ services:
 docker compose up -d
 ```
 
+Vaultwarden is bound to localhost only (for reverse proxy use).
+
 ---
 
 ## Step 5 – Reverse Proxy + SSL
 
-Configure your reverse proxy to forward traffic to:
+Vaultwarden must be placed behind a reverse proxy.
+
+Detailed example (Nginx Proxy Manager):
+
+https://github.com/StackCraftedYT/vaultwarden-docker/blob/main/proxy-examples/nginx-proxy-manager.md
+
+Proxy target (example):
 
 ```text
-127.0.0.1:8080
+127.0.0.1:8081
 ```
 
 ---
@@ -123,12 +120,12 @@ docker compose up -d
 ## Backup
 
 ```bash
-tar -czvf vaultwarden-backup.tar.gz /opt/vaultwarden/data
+tar -czvf vaultwarden-backup.tar.gz /opt/docker/vaultwarden/data
 ```
 
 ---
 
 ## Links
 
-- GitHub Repo: https://github.com/StackCraftedYT/vaultwarden-docker
-- YouTube Video: coming soon
+GitHub Repo: https://github.com/StackCraftedYT/vaultwarden-docker  
+YouTube Video: coming soon
