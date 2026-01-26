@@ -12,6 +12,7 @@ All tutorials are paired with YouTube videos and copy-paste configs.
 
 ## Tutorials
 
+- [Tutorials Index](tutorials/)
 - Vaultwarden (Password Manager) – Coming soon
 
 ## Links
