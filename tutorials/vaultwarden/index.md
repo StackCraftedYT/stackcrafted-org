@@ -14,11 +14,11 @@ This page is the written companion to the StackCrafted YouTube video.
 
 ## What You Will Deploy
 
-- Vaultwarden in Docker
-- Docker Compose deployment
-- HTTPS with free SSL
-- Custom domain/subdomain
-- Persistent storage
+- Vaultwarden in Docker  
+- Docker Compose deployment  
+- HTTPS with free SSL  
+- Custom domain/subdomain  
+- Persistent storage  
 
 ---
 
