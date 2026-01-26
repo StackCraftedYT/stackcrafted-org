@@ -8,4 +8,5 @@ Step-by-step self-hosting guides with Docker.
 
 ## Available Tutorials
 
-[Vaultwarden (Password Manager)](/tutorials/vaultwarden/)
+[Vaultwarden (Password Manager)]({{ site.baseurl }}/tutorials/vaultwarden/)
+
