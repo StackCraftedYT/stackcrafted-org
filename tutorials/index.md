@@ -32,3 +32,5 @@ The website guide always links to the matching repo.
 ## Available Tutorials
 
 - [Vaultwarden (Password Manager) on Docker + SSL](./vaultwarden/)
+  - Config repo: https://github.com/StackCraftedYT/vaultwarden-docker
+
