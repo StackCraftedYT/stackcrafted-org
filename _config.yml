@@ -11,4 +11,17 @@ plugins:
 markdown: kramdown
 
 permalink: pretty
+# Enable copy button on code blocks
+kramdown:
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+# Enable copy button
+plugins:
+  - jekyll-feed
+
+# Copy button styling
+enable_copy_code_button: true
+
 
