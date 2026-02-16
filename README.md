@@ -1,6 +1,6 @@
 # StackCrafted
 
-Docker & Self-Hosting, Done Properly.
+Self-Hosting & Docker Tutorials.
 
 Welcome to StackCrafted — a collection of practical, real-world tutorials for self-hosting services using Docker and open-source tools.
 
