@@ -1,61 +1,224 @@
----
-title: Vaultwarden (Bitwarden) on Docker + SSL
----
+# Vaultwarden (Bitwarden Alternative) — Docker Deployment
 
-# Vaultwarden (Bitwarden) on Docker + SSL
+Deploy Vaultwarden securely using Docker, localhost binding, and reverse proxy readiness.
 
-Self-host your own Bitwarden-compatible password manager using **Vaultwarden**, Docker, and HTTPS.
+This guide matches the StackCrafted tutorial:
 
-This tutorial is part of the StackCrafted project and follows a practical, copy-paste friendly approach.
+https://stackcrafted.org/tutorials/vaultwarden/
 
 ---
 
-## How this tutorial is structured
+# Overview
 
-This tutorial consists of two parts:
+Vaultwarden is a lightweight, open-source Bitwarden-compatible password manager designed for self-hosting.
 
-### 1) Website Guide (this page)
+This deployment is:
 
-Provides the full step-by-step walkthrough.
-
-### 2) Configuration Repository
-
-All Docker and configuration files are stored here:
-
-https://github.com/StackCraftedYT/vaultwarden-docker
-
-You will clone and use that repository during this tutorial.
+- Bound to localhost (`127.0.0.1`)
+- Reverse proxy ready
+- Secure admin token supported
+- Persistent data storage enabled
 
 ---
 
-## What you will build
+# Architecture
 
-- Vaultwarden running in Docker  
-- Persistent storage  
-- Accessible via your own domain or subdomain  
-- HTTPS using a reverse proxy  
+```
+Internet
+   │
+Reverse Proxy (Nginx Proxy Manager / Traefik / Caddy)
+   │
+Docker network: web-net
+   │
+Vaultwarden container
+   │
+Persistent data folder
+```
 
-Example domain used in this guide:
-
-vault.YOURDOMAIN.TLD
-
-You must replace this with your own domain.
-
----
-
-## Requirements
-
-- Linux VPS (free tier is sufficient)  
-- Domain or subdomain  
-- Docker installed  
-- Docker Compose plugin installed  
+Vaultwarden itself is NOT exposed publicly.
 
 ---
 
-## Tutorial Status
+# Folder Structure
 
-This tutorial is currently being written step-by-step.
+```
+vaultwarden-docker/
+├── docker-compose.yml
+├── .env.example
+└── data/
+```
 
-Next section will cover:
+---
 
-Preparing the server and installing Docker.
+# Requirements
+
+- Linux server
+- Docker
+- Docker Compose plugin
+
+Verify installation:
+
+```bash
+docker --version
+docker compose version
+```
+
+---
+
+# Setup
+
+## 1. Clone repository
+
+```bash
+git clone https://github.com/StackCraftedYT/vaultwarden-docker.git
+cd vaultwarden-docker
+```
+
+---
+
+## 2. Create Docker network (required once)
+
+```bash
+docker network create web-net
+```
+
+---
+
+## 3. Configure environment file
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Example:
+
+```env
+DOMAIN=https://vault.yourdomain.tld
+ADMIN_TOKEN=your_secure_token
+```
+
+Generate secure token:
+
+```bash
+openssl rand -base64 48
+```
+
+---
+
+## 4. Start Vaultwarden
+
+```bash
+docker compose up -d
+```
+
+---
+
+## 5. Verify container
+
+```bash
+docker ps
+```
+
+Expected output:
+
+```
+vaultwarden   Up ...
+```
+
+---
+
+# Access
+
+Vaultwarden listens locally:
+
+```
+http://127.0.0.1:8081
+```
+
+Access externally via reverse proxy:
+
+```
+https://vault.yourdomain.tld
+```
+
+Admin panel:
+
+```
+https://vault.yourdomain.tld/admin
+```
+
+---
+
+# Security Notes
+
+This deployment:
+
+- prevents direct public access
+- requires reverse proxy
+- supports secure admin tokens
+- isolates Vaultwarden on Docker network
+
+---
+
+# Reverse Proxy (Recommended)
+
+Supported proxies:
+
+- Nginx Proxy Manager
+- Traefik
+- Caddy
+- Nginx
+
+Example forward target:
+
+```
+vaultwarden:80
+```
+
+Docker network:
+
+```
+web-net
+```
+
+---
+
+# Data Persistence
+
+Vaultwarden data is stored in:
+
+```
+./data
+```
+
+Do NOT delete unless wiping instance.
+
+---
+
+# Updating
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+---
+
+# Stop container
+
+```bash
+docker compose down
+```
+
+---
+
+# Tutorial and Documentation
+
+Full tutorial:
+
+https://stackcrafted.org/tutorials/vaultwarden/
+
+StackCrafted project:
+
+https://github.com/StackCraftedYT
