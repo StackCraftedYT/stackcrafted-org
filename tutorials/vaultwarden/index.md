@@ -1,52 +1,24 @@
-# Vaultwarden (Bitwarden Alternative) — Docker Deployment
+---
+title: Vaultwarden (Self-Hosted Bitwarden)
+---
 
-Deploy Vaultwarden securely using Docker, localhost binding, and reverse proxy readiness.
+# Vaultwarden — Self-Host Your Own Password Manager
 
-This guide matches the StackCrafted tutorial:
+Vaultwarden is a lightweight, self-hosted Bitwarden-compatible password manager.
 
-https://stackcrafted.org/tutorials/vaultwarden/
+This guide shows how to deploy Vaultwarden securely using Docker and reverse proxy.
 
 ---
 
 # Overview
 
-Vaultwarden is a lightweight, open-source Bitwarden-compatible password manager designed for self-hosting.
+This deployment:
 
-This deployment is:
-
-- Bound to localhost (`127.0.0.1`)
-- Reverse proxy ready
-- Secure admin token supported
-- Persistent data storage enabled
-
----
-
-# Architecture
-
-```
-Internet
-   │
-Reverse Proxy (Nginx Proxy Manager / Traefik / Caddy)
-   │
-Docker network: web-net
-   │
-Vaultwarden container
-   │
-Persistent data folder
-```
-
-Vaultwarden itself is NOT exposed publicly.
-
----
-
-# Folder Structure
-
-```
-vaultwarden-docker/
-├── docker-compose.yml
-├── .env.example
-└── data/
-```
+- runs in Docker
+- binds only to localhost
+- uses persistent storage
+- integrates with reverse proxy
+- supports secure admin panel
 
 ---
 
@@ -54,29 +26,21 @@ vaultwarden-docker/
 
 - Linux server
 - Docker
-- Docker Compose plugin
+- Docker Compose
+- Reverse proxy (recommended)
 
-Verify installation:
+---
+
+# Step 1 — Create directory
 
 ```bash
-docker --version
-docker compose version
+mkdir -p /opt/docker/vaultwarden
+cd /opt/docker/vaultwarden
 ```
 
 ---
 
-# Setup
-
-## 1. Clone repository
-
-```bash
-git clone https://github.com/StackCraftedYT/vaultwarden-docker.git
-cd vaultwarden-docker
-```
-
----
-
-## 2. Create Docker network (required once)
+# Step 2 — Create Docker network
 
 ```bash
 docker network create web-net
@@ -84,10 +48,34 @@ docker network create web-net
 
 ---
 
-## 3. Configure environment file
+# Step 3 — Create docker-compose.yml
+
+```yaml
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:80"
+    volumes:
+      - ./data:/data
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - DOMAIN=${DOMAIN}
+    networks:
+      - web-net
+
+networks:
+  web-net:
+    external: true
+```
+
+---
+
+# Step 4 — Create .env file
 
 ```bash
-cp .env.example .env
 nano .env
 ```
 
@@ -98,15 +86,9 @@ DOMAIN=https://vault.yourdomain.tld
 ADMIN_TOKEN=your_secure_token
 ```
 
-Generate secure token:
-
-```bash
-openssl rand -base64 48
-```
-
 ---
 
-## 4. Start Vaultwarden
+# Step 5 — Start container
 
 ```bash
 docker compose up -d
@@ -114,35 +96,31 @@ docker compose up -d
 
 ---
 
-## 5. Verify container
+# Step 6 — Verify container
 
 ```bash
 docker ps
 ```
 
-Expected output:
-
-```
-vaultwarden   Up ...
-```
-
 ---
 
-# Access
+# Step 7 — Access Vaultwarden
 
-Vaultwarden listens locally:
+Local test:
 
 ```
 http://127.0.0.1:8081
 ```
 
-Access externally via reverse proxy:
+External access via reverse proxy:
 
 ```
 https://vault.yourdomain.tld
 ```
 
-Admin panel:
+---
+
+# Admin panel
 
 ```
 https://vault.yourdomain.tld/admin
@@ -150,49 +128,11 @@ https://vault.yourdomain.tld/admin
 
 ---
 
-# Security Notes
-
-This deployment:
-
-- prevents direct public access
-- requires reverse proxy
-- supports secure admin tokens
-- isolates Vaultwarden on Docker network
-
----
-
-# Reverse Proxy (Recommended)
-
-Supported proxies:
-
-- Nginx Proxy Manager
-- Traefik
-- Caddy
-- Nginx
-
-Example forward target:
+# Data storage
 
 ```
-vaultwarden:80
+/opt/docker/vaultwarden/data
 ```
-
-Docker network:
-
-```
-web-net
-```
-
----
-
-# Data Persistence
-
-Vaultwarden data is stored in:
-
-```
-./data
-```
-
-Do NOT delete unless wiping instance.
 
 ---
 
@@ -205,20 +145,6 @@ docker compose up -d
 
 ---
 
-# Stop container
+# GitHub repository
 
-```bash
-docker compose down
-```
-
----
-
-# Tutorial and Documentation
-
-Full tutorial:
-
-https://stackcrafted.org/tutorials/vaultwarden/
-
-StackCrafted project:
-
-https://github.com/StackCraftedYT
+https://github.com/StackCraftedYT/vaultwarden-docker
