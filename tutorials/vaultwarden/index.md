@@ -111,7 +111,25 @@ Local test:
 ```
 http://127.0.0.1:8081
 ```
+## Accessing Vaultwarden on a VPS (SSH tunnel required)
 
+Vaultwarden is bound to:
+
+127.0.0.1:8081
+
+This means it is only accessible from the server itself for security reasons.
+
+To access it from your local computer, create an SSH tunnel:
+
+```bash
+ssh -L 8081:127.0.0.1:8081 USER@YOUR_SERVER_IP
+```
+
+Or if using a custom SSH port:
+```bash
+ssh -p 1234 -L 8081:127.0.0.1:8081 USER@YOUR_SERVER_IP
+
+```
 External access via reverse proxy:
 
 ```
