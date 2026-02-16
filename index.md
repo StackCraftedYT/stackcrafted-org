@@ -4,7 +4,7 @@ title: StackCrafted
 
 # StackCrafted
 
-Docker & Self-Hosting. Done Properly.
+Self-Hosting & Docker Tutorials.
 
 Welcome to StackCrafted — practical, real-world tutorials for self-hosting using Docker and open-source tools.
 
