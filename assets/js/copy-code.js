@@ -1,57 +1,45 @@
 (() => {
   function addCopyButtons() {
-    // Target code blocks rendered by Jekyll/Rouge (usually: pre > code)
     const blocks = document.querySelectorAll("pre");
 
     blocks.forEach((pre) => {
-      // Avoid adding twice
-      if (pre.querySelector(".copy-code-btn")) return;
+      // Find correct container (some themes wrap pre inside div.highlight)
+      const container = pre.parentElement.classList.contains("highlight")
+        ? pre.parentElement
+        : pre;
 
-      // Create wrapper for positioning
-      pre.style.position = "relative";
+      if (container.querySelector(".copy-code-btn")) return;
+
+      container.style.position = "relative";
 
       const btn = document.createElement("button");
       btn.className = "copy-code-btn";
       btn.type = "button";
       btn.textContent = "Copy";
 
+      btn.style.position = "absolute";
+      btn.style.top = "8px";
+      btn.style.right = "8px";
+      btn.style.zIndex = "10";
+
       btn.addEventListener("click", async () => {
         const code = pre.querySelector("code");
         const text = code ? code.innerText : pre.innerText;
 
-        try {
-          await navigator.clipboard.writeText(text);
-          btn.textContent = "Copied!";
-          btn.classList.add("copied");
-          setTimeout(() => {
-            btn.textContent = "Copy";
-            btn.classList.remove("copied");
-          }, 1200);
-        } catch (e) {
-          // Fallback for older browsers
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          textarea.style.position = "fixed";
-          textarea.style.top = "-9999px";
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
+        await navigator.clipboard.writeText(text);
 
-          btn.textContent = "Copied!";
-          btn.classList.add("copied");
-          setTimeout(() => {
-            btn.textContent = "Copy";
-            btn.classList.remove("copied");
-          }, 1200);
-        }
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+
+        setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.classList.remove("copied");
+        }, 1200);
       });
 
-      pre.appendChild(btn);
+      container.appendChild(btn);
     });
   }
 
-  // Run on load
   document.addEventListener("DOMContentLoaded", addCopyButtons);
 })();
