@@ -1,0 +1,39 @@
+/* Copy button styling for code blocks */
+pre {
+  padding-top: 2.2rem; /* space for button */
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.6rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+
+  background: rgba(0, 0, 0, 0.35);
+  color: #e5e7eb;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: transform 0.05s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.copy-code-btn:hover {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.copy-code-btn:active {
+  transform: scale(0.98);
+}
+
+.copy-code-btn.copied {
+  border-color: rgba(16, 185, 129, 0.6);
+  color: #a7f3d0;
+}
