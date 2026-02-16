@@ -4,19 +4,33 @@ title: StackCrafted
 
 # StackCrafted
 
-Docker & Self-Hosting, Done Properly.
+Docker & Self-Hosting. Done Properly.
 
-Welcome to StackCrafted — a collection of practical, real-world tutorials for self-hosting services using Docker and open-source tools.
+Welcome to StackCrafted — practical, real-world tutorials for self-hosting using Docker and open-source tools.
 
-All tutorials are paired with YouTube videos and copy-paste configs.
+All tutorials include:
 
-## Tutorials
+- step-by-step instructions  
+- copy-paste configs  
+- YouTube walkthroughs  
 
-- [Tutorials Index](tutorials/)
-- Vaultwarden (Password Manager) – Coming soon
+---
 
-## Links
+# Tutorials
 
-- YouTube: https://youtube.com/@StackCraftedHQ  
-- GitHub: https://github.com/StackCraftedYT  
-- Website: https://stackcrafted.org
+→ [Tutorials Index](tutorials/)
+
+→ [Vaultwarden — Self-Hosted Password Manager](tutorials/vaultwarden/)
+
+---
+
+# Links
+
+YouTube  
+https://youtube.com/@StackCraftedHQ
+
+GitHub  
+https://github.com/StackCraftedYT
+
+Website  
+https://stackcrafted.org
