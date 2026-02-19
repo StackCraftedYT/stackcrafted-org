@@ -1,162 +1,321 @@
-# Vaultwarden (Bitwarden) -- Docker Deployment
+---
+title: Vaultwarden (Password Manager)
+---
 
-Self-host Vaultwarden (lightweight Bitwarden server) using Docker and
-Docker Compose with persistent storage.
+# Vaultwarden Docker Deployment Guide
 
-This tutorial is part of the **StackCrafted** project.
+Deploy Vaultwarden securely using Docker with persistent storage and
+prepare it for production use behind a reverse proxy.
 
-------------------------------------------------------------------------
+Vaultwarden is a lightweight, self-hosted Bitwarden-compatible password
+manager.
 
-# Important Prerequisite: Reverse Proxy Required
-
-This guide assumes you already have a functioning reverse proxy
-configured, such as:
-
--   Nginx Proxy Manager\
--   Nginx\
--   Traefik\
--   Caddy
-
-and that:
-
--   Your domain is working (example: `vault.stackcrafted.org`)
--   SSL certificate is already configured
--   The service is accessible externally via HTTPS
-
-Example working setup:
-
-https://vault.stackcrafted.org
-
-Vaultwarden itself runs locally on port:
-
-http://localhost:8081
-
-The reverse proxy handles:
-
--   External access
--   HTTPS encryption
--   Domain routing
-
-If you do not yet have a reverse proxy configured, you must complete
-that first before continuing.
+This guide follows production best practices and integrates cleanly into
+a reverse proxy architecture.
 
 ------------------------------------------------------------------------
 
-# Folder Structure
+## 📦 What This Deploys
 
-vaultwarden-docker/ ├── docker-compose.yml ├── .env └── data/
+-   Vaultwarden server (Bitwarden-compatible)
+-   Persistent storage using bind-mounted data directory
+-   Local-only binding for secure reverse proxy integration
+-   Ready for production behind HTTPS reverse proxy
+
+Vaultwarden will run at:
+
+    http://127.0.0.1:8081
+
+This is intentional and secure.
 
 ------------------------------------------------------------------------
 
-# Step 1 --- Create docker-compose.yml
+## 📁 Folder Structure
+
+Deployment path:
+
+    /opt/docker/vaultwarden/
+    ├── docker-compose.yml
+    ├── .env
+    └── data/
+
+Create the directory:
+
+``` bash
+mkdir -p /opt/docker/vaultwarden
+cd /opt/docker/vaultwarden
+```
+
+------------------------------------------------------------------------
+
+## 🌐 Create the Reverse Proxy Network
+
+This setup expects an external Docker network called `web-net` (shared
+with your reverse proxy stack).
+
+Create it once:
+
+``` bash
+docker network create web-net
+```
+
+If it already exists, Docker will tell you.
+
+------------------------------------------------------------------------
+
+## ⚙️ Create docker-compose.yml
+
+Create the file:
+
+``` bash
+nano docker-compose.yml
+```
+
+Paste:
 
 ``` yaml
-version: "3.8"
-
 services:
   vaultwarden:
     image: vaultwarden/server:latest
     container_name: vaultwarden
     restart: unless-stopped
-
-    env_file:
-      - .env
-
-    volumes:
-      - ./data:/data
-
     ports:
       - "127.0.0.1:8081:80"
+    volumes:
+      - ./data:/data
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - DOMAIN=${DOMAIN}
+    networks:
+      - web-net
+
+networks:
+  web-net:
+    external: true
 ```
+
+Save and exit.
 
 ------------------------------------------------------------------------
 
-# Step 2 --- Create .env file
+## ⚙️ Create .env file
+
+Create:
+
+``` bash
+nano .env
+```
+
+Paste (update the domain):
 
 ``` env
-DOMAIN=https://vault.YOURDOMAIN.TLD
-ADMIN_TOKEN=PASTE_GENERATED_TOKEN_HERE
-SIGNUPS_ALLOWED=false
+# Public URL you will use via your reverse proxy (HTTPS recommended)
+DOMAIN=https://vault.example.com
+
+# Replace with your Argon2 hash (see next section)
+ADMIN_TOKEN=replace_with_argon2_hash
 ```
 
-Replace vault.YOURDOMAIN.TLD with your actual domain.
-
-Example:
-
-vault.stackcrafted.org
+Save and exit.
 
 ------------------------------------------------------------------------
 
-# Step 3 --- Generate Secure ADMIN_TOKEN
+## 🔐 Secure Admin Token (Argon2)
 
-Run:
+To securely enable the admin panel (`/admin`), generate a hashed token
+using Argon2.
+
+1.  Ensure Argon2 is installed:
+
+``` bash
+sudo apt install argon2
+```
+
+2.  Run the following command:
 
 ``` bash
 echo -n "YourStrongPassword" | argon2 "$(openssl rand -base64 32)" -e -id -k 65540 -t 3 -p 4 | sed 's#\$#\$\$#g'
 ```
 
-This command:
+3.  Copy the **entire output** (it will start with `$$argon2id...`).
 
--   Generates Argon2 hash
--   Automatically escapes \$ characters
--   Works directly in Docker Compose .env
+4.  Paste it as the value for `ADMIN_TOKEN` in your `.env` file:
 
-Paste output into:
-
-ADMIN_TOKEN=OUTPUT_HERE
+``` env
+ADMIN_TOKEN=$$argon2id$$v=19$$m=65540,t=3,p=4...
+```
 
 ------------------------------------------------------------------------
 
-# Step 4 --- Start Vaultwarden
+## ▶️ Start Vaultwarden
+
+Run:
 
 ``` bash
 docker compose up -d
 ```
 
-Verify:
+Verify container is running:
 
 ``` bash
 docker ps
 ```
 
-------------------------------------------------------------------------
+Expected output includes:
 
-# Step 5 --- Access Vaultwarden
-
-Local:
-
-http://localhost:8081
-
-External:
-
-https://vault.YOURDOMAIN.TLD
+    vaultwarden
 
 ------------------------------------------------------------------------
 
-# Step 6 --- Access Admin Panel
+## 🌐 Verify Local Access
 
-https://vault.YOURDOMAIN.TLD/admin
+Test locally on the server:
 
-Use password from ADMIN_TOKEN generation.
+``` bash
+curl -sI http://127.0.0.1:8081 | head -n 5
+```
 
-------------------------------------------------------------------------
+Expected:
 
-# Backup Recommendation
+    HTTP/1.1 200 OK
+    server: Rocket
 
-Backup:
-
-vaultwarden-docker/data
-
-Contains:
-
--   Database
--   Encryption keys
--   All vault data
+Vaultwarden is now running.
 
 ------------------------------------------------------------------------
 
-# StackCrafted
+## 🔐 Access via SSH Tunnel (Optional)
 
-More tutorials:
+From your local machine:
 
-https://stackcrafted.org
+``` bash
+ssh -L 8081:127.0.0.1:8081 user@your-server-ip
+```
+If your server uses a custom SSH port (example: 1234):
+```
+ssh -p 1234 -L 8081:127.0.0.1:8081 user@your-server-ip
+```
+
+Then open:
+
+    http://localhost:8081
+
+------------------------------------------------------------------------
+
+## 🔒 Production Setup: Reverse Proxy Required
+
+Vaultwarden is intentionally bound to:
+
+    127.0.0.1:8081
+
+This prevents direct internet exposure.
+
+For production use, Vaultwarden must be placed behind a reverse proxy.
+
+Supported reverse proxies include:
+
+-   Nginx
+-   Nginx Proxy Manager
+-   Caddy
+-   Traefik
+
+Architecture overview:
+
+    Internet
+       ↓
+    Reverse Proxy (HTTPS :443)
+       ↓
+    Vaultwarden (127.0.0.1:8081)
+
+The reverse proxy provides:
+
+-   HTTPS encryption
+-   SSL certificate management (Let's Encrypt, etc.)
+-   Secure public access
+-   Proper request forwarding
+
+------------------------------------------------------------------------
+
+## 🔧 Reverse Proxy Integration Example (Nginx)
+
+If you already have a reverse proxy, configure it to forward to:
+
+    http://127.0.0.1:80
+
+Example Nginx location block:
+
+``` nginx
+location / {
+    proxy_pass http://127.0.0.1:80;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+------------------------------------------------------------------------
+
+## 🎥 Reverse Proxy Setup (Next Tutorial)
+
+The next StackCrafted tutorial will cover:
+
+-   Nginx Proxy Manager deployment
+-   Automatic HTTPS with Let's Encrypt
+-   Domain configuration
+-   Secure internet exposure
+-   Integration with Vaultwarden and other services
+
+This reverse proxy setup will serve as the foundation for all future
+deployments.
+
+------------------------------------------------------------------------
+
+## 💾 Persistent Storage
+
+Vaultwarden data is stored in:
+``` bash
+    /opt/docker/vaultwarden/data
+```
+Backup this directory regularly.
+
+------------------------------------------------------------------------
+
+## 🔄 Updating Vaultwarden
+
+To update:
+
+``` bash
+cd /opt/docker/vaultwarden
+docker compose pull
+docker compose up -d
+```
+
+------------------------------------------------------------------------
+
+## 🛑 Stop Vaultwarden
+
+To stop:
+
+``` bash
+docker compose down
+```
+
+------------------------------------------------------------------------
+
+## ✅ Deployment Complete
+
+You now have a secure, production-ready Vaultwarden deployment using
+Docker.
+
+Next recommended steps:
+
+-   Configure reverse proxy (HTTPS)
+-   Create your user account
+-   Disable public registration if required
+-   Configure automated backups
+
+------------------------------------------------------------------------
+
+StackCrafted tutorials focus on clean, production-ready deployments
+using Docker and open-source tools.
