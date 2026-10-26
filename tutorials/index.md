@@ -34,3 +34,6 @@ The website guide always links to the matching repo.
 - [Vaultwarden (Password Manager) on Docker + SSL](./vaultwarden/)
   - Config repo: https://github.com/StackCraftedYT/vaultwarden-docker
 
+- [Self-Hosted AI Lab (Ollama, Open WebUI, Vaultwarden)](./self-hosted-ai-lab/)
+  - Config repo: https://github.com/StackCraftedYT/self-hosted-ai-lab
+
