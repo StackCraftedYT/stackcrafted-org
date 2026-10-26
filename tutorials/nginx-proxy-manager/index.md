@@ -117,7 +117,7 @@ Open:
 
 Default login:
 
-    Email: admin@example.com
+    Email: admin [at] example [dot] com
     Password: changeme
 
 Change the email and password immediately after first login.
