@@ -11,6 +11,8 @@ and store passwords in Vaultwarden, all on your own machine.
 This guide follows StackCrafted production practices and integrates
 cleanly into a reverse proxy architecture.
 
+A video walkthrough is available on the StackCrafted YouTube channel.
+
 ------------------------------------------------------------------------
 
 ## What This Deploys
