@@ -190,6 +190,47 @@ credentials.
 
 ------------------------------------------------------------------------
 
+## 8. Old Chats Refuse To Open
+
+After switching providers, existing chats can show:
+
+    Model provider mismatch
+    This chat uses OpenAI, but your current provider is Local Gateway.
+    Switch to OpenAI to continue.
+
+Each chat records the provider it was created with and refuses to continue
+under a different one. Three ways out, in order of safety.
+
+### Option A: keep two configurations
+
+Switch `model_provider` back, restart, read the old chats, then switch forward
+again. Slow, but nothing is modified.
+
+### Option B: copy the chat into a new one
+
+Start a new chat with the new provider and paste the transcript. Manual, but
+zero risk.
+
+### Option C: re-point the chat records
+
+The client stores provider metadata in a local SQLite database. With the app
+fully closed:
+
+    %USERPROFILE%\.codex\state_5.sqlite
+
+Back it up first, including any `-wal` and `-shm` files sitting beside it, then:
+
+    UPDATE threads
+    SET model_provider = 'gateway'
+    WHERE model_provider = 'openai';
+
+Restart the app. The transcripts are unchanged; only the provider label moves.
+This is an unsupported edit, so keep the backup and expect to restore it if a
+very old transcript contains payloads the new provider rejects. A rejected
+payload shows as a 400, not as the mismatch error.
+
+------------------------------------------------------------------------
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -199,6 +240,7 @@ credentials.
 | 401 from the gateway | Key missing or not visible to the app | Check `env_key` name, restart the app |
 | Provider not found | `model_provider` in a project file | Move it to the user level file |
 | Model missing from picker | Catalog not loaded | Fix `model_catalog_json`, restart |
+| `Model provider mismatch` on an old chat | Chat was created under another provider | See section 8 |
 | Text works, tools fail | Weak tool calling or dropped tool fields | Test a read, edit, run loop |
 
 ------------------------------------------------------------------------
