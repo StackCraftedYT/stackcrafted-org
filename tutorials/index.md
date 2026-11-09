@@ -37,3 +37,6 @@ The website guide always links to the matching repo.
 - [Nginx Proxy Manager on Docker](./nginx-proxy-manager/)
   - Config repo: https://github.com/StackCraftedYT/nginx-proxy-manager-docker
 
+- [Run Codex App on a Local AI Gateway](./codex-local-gateway/)
+  - No config repo: the whole setup is inside the guide
+
